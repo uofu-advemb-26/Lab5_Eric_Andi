@@ -9,7 +9,6 @@ add_compile_definitions(
 
 # This is the main binary. List your C files here.
 add_executable(hello_freertos hello_freertos.c)
-add_executable(threads threads.c)
 add_executable(gpio_interrupt gpio_interrupt.c)
 add_executable(rtc rtc.c)
 add_executable(sleep sleep.c)
@@ -27,12 +26,6 @@ pico_enable_stdio_usb(hello_freertos 0)
 
 # Add the libraries to the build
 target_link_libraries(hello_freertos PRIVATE
-  pico_stdlib
-  pico_multicore
-  pico_async_context_freertos
-  FreeRTOS-Kernel-Heap4
-)
-target_link_libraries(threads PRIVATE
   pico_stdlib
   pico_multicore
   pico_async_context_freertos
