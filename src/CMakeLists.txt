@@ -1,8 +1,21 @@
+
+
+add_compile_definitions(
+    DELAY_MS=100
+    IN_PIN=6
+    OUT_PIN=7
+)
+
+
 # This is the main binary. List your C files here.
-add_executable(hello_freertos
-    hello_freertos.c
-    threads.c
-    )
+add_executable(hello_freertos hello_freertos.c)
+add_executable(threads threads.c)
+add_executable(gpio_interrupt gpio_interrupt.c)
+add_executable(rtc rtc.c)
+add_executable(sleep sleep.c)
+add_executable(timer timer.c )
+add_executable(task_delay task_delay.c)
+
 
 pico_set_program_name(hello_freertos "test")
 pico_set_program_version(hello_freertos "0.1")
@@ -14,6 +27,44 @@ pico_enable_stdio_usb(hello_freertos 0)
 
 # Add the libraries to the build
 target_link_libraries(hello_freertos PRIVATE
+  pico_stdlib
+  pico_multicore
+  pico_async_context_freertos
+  FreeRTOS-Kernel-Heap4
+)
+target_link_libraries(threads PRIVATE
+  pico_stdlib
+  pico_multicore
+  pico_async_context_freertos
+  FreeRTOS-Kernel-Heap4
+)
+target_link_libraries(gpio_interrupt PRIVATE
+  pico_stdlib
+  pico_multicore
+  pico_async_context_freertos
+  FreeRTOS-Kernel-Heap4
+)
+target_link_libraries(rtc PRIVATE
+  pico_stdlib
+  pico_multicore
+  pico_async_context_freertos
+  FreeRTOS-Kernel-Heap4
+  hardware_rtc
+  pico_cyw43_arch_none
+)
+target_link_libraries(sleep PRIVATE
+  pico_stdlib
+  pico_multicore
+  pico_async_context_freertos
+  FreeRTOS-Kernel-Heap4
+)
+target_link_libraries(timer PRIVATE
+  pico_stdlib
+  pico_multicore
+  pico_async_context_freertos
+  FreeRTOS-Kernel-Heap4
+)
+target_link_libraries(task_delay PRIVATE
   pico_stdlib
   pico_multicore
   pico_async_context_freertos
@@ -36,4 +87,14 @@ find_program(OPENOCD openocd)
 find_program(PICOTOOL picotool)
 
 add_custom_target(flash ${PICOTOOL} load -f $<TARGET_FILE:hello_freertos> DEPENDS hello_freertos)
-add_custom_target(openocd_flash ${OPENOCD} -s ${OPENOCD_PATH} -f interface/cmsis-dap.cfg -f target/rp2040.cfg -c 'adapter speed 5000' -c program "$<TARGET_FILE:hello_freertos>" verify reset exit' DEPENDS hello_freertos)
+add_custom_target(flash_task_delay ${PICOTOOL} load -f $<TARGET_FILE:task_delay> DEPENDS task_delay)
+add_custom_target(flash_timer ${PICOTOOL} load -f $<TARGET_FILE:timer> DEPENDS timer)
+add_custom_target(flash_sleep ${PICOTOOL} load -f $<TARGET_FILE:sleep> DEPENDS sleep)
+add_custom_target(flash_rtc ${PICOTOOL} load -f $<TARGET_FILE:rtc> DEPENDS rtc)
+add_custom_target(openocd_flash ${OPENOCD} 
+    -s ${OPENOCD_PATH} 
+    -f interface/cmsis-dap.cfg 
+    -f target/rp2040.cfg 
+    -c 'adapter speed 5000' 
+    -c 'program "$<TARGET_FILE:hello_freertos>" verify reset exit'
+DEPENDS hello_freertos)
