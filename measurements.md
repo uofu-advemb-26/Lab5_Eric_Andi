@@ -10,7 +10,7 @@ Before the busy loop, we measured the period at 199.99 ms. After the busy loop, 
 Before the busy loop, we measured the period at 199.99 ms. After the busy loop, we measured the period at 199.99 ms. We expected to get a noticable delay here, like we did for the sleep methodolody of timekeeping after introducing a busy loop, but we didn't. 
 
 ## GPIO Interrupt
-
+The initial delay between the input and output was 1.25 microseconds. When we added a 20 iteration busy loop (empty for loop) the delay increased to 2.9 microseconds.
 
 ## Task Delay with two threads
 When we added a second thread with the same priority that only had a while(1) loop in its body, and set the task delay to 1 ms, the period of the output was 2 ms. This means that the second task didn't add any delay to the period.
